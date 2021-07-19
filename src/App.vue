@@ -43,12 +43,8 @@ button {
   border: #1E90FF solid 1px;
   border-radius: 4px;
   background-color: white;
-}
-
-.buttonStyle {
   color: #1E90FF;
-  text-decoration: none;
-  font-size: 18px;
+  cursor: pointer
 }
 
 .linkStyle {

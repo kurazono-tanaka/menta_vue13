@@ -16,9 +16,7 @@
           <input type="password" id="password" placeholder="Password" v-model="password"/>
         </li>
       </ul>
-      <button @click="signUp">
-        <router-link to="/dashboard" class="buttonStyle">新規登録</router-link>
-      </button>
+      <button @click="signUp">新規登録</button>
       <p><router-link to="/signin" class="linkStyle">ログインはこちらから</router-link></p>
     </main>
     <footer>
@@ -28,7 +26,9 @@
 </template>
 
 <script>
-import firebase from 'firebase'
+import firebase from 'firebase/app'
+import 'firebase/auth'
+import 'firebase/firestore'
 
 export default {
   name: 'signup',
@@ -45,6 +45,7 @@ export default {
         .auth()
         .createUserWithEmailAndPassword(this.mailaddress, this.password)
         .then(user => {
+          this.$router.push('/dashboard')
         })
         .catch(error => {
           alert(error.message)
