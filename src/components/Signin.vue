@@ -22,10 +22,6 @@
 </template>
 
 <script>
-import firebase from 'firebase/app'
-import 'firebase/auth'
-import 'firebase/firestore'
-
 export default {
   name: 'signin',
   data () {
@@ -36,16 +32,9 @@ export default {
   },
   methods: {
     signIn () {
-      firebase
-        .auth()
-        .signInWithEmailAndPassword(this.mailaddress, this.password)
-        .then(user => {
-          this.$store.commit('setUserName', this.username)
-          this.$router.push('/dashboard')
-        })
-        .catch(error => {
-          alert(error.message)
-        })
+      this.$store.commit('setMailAddress', this.mailaddress)
+      this.$store.commit('setPassword', this.password)
+      this.$store.dispatch('signIn')
     }
   }
 }
