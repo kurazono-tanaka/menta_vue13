@@ -35,7 +35,7 @@ label {
   text-align: center;
 }
 
-button {
+.btn-style1 {
   display:block;
   margin: 50px auto 0;
   width: 100px;
@@ -47,7 +47,19 @@ button {
   cursor: pointer
 }
 
-.linkStyle {
+.btn-style2 {
+  display:block;
+  margin: 0 0 0 20px;
+  width: 100px;
+  height: 30px;
+  border-style: none;
+  border-radius: 4px;
+  background-color:#005FFF;
+  color: white;
+  cursor: pointer
+}
+
+.link-style {
   color: #1E90FF;
   text-decoration: none;
 }
@@ -59,5 +71,24 @@ p {
 footer {
   margin-top: 70px;
   font-size: 10px;
+}
+
+header {
+  display:flex;
+  justify-content: space-around;
+  height: 35px;
+}
+
+.header-username {
+  line-height: 35px;
+}
+
+.header-content {
+  display:flex;
+  align-items:center;
+}
+
+table {
+  width: 200px;
 }
 </style>

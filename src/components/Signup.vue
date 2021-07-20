@@ -16,8 +16,8 @@
           <input type="password" id="password" placeholder="Password" v-model="password"/>
         </li>
       </ul>
-      <button @click="signUp">新規登録</button>
-      <p><router-link to="/signin" class="linkStyle">ログインはこちらから</router-link></p>
+      <button class="btn-style1" @click="signUp">新規登録</button>
+      <p><router-link to="/signin" class="link-style">ログインはこちらから</router-link></p>
     </main>
     <footer>
       <p>Copyright ©2019 ○○Inc. All rights reserved</p>
@@ -26,9 +26,9 @@
 </template>
 
 <script>
-import firebase from 'firebase/app'
-import 'firebase/auth'
-import 'firebase/firestore'
+// import firebase from 'firebase/app'
+// import 'firebase/auth'
+// import 'firebase/firestore'
 
 export default {
   name: 'signup',
@@ -41,15 +41,10 @@ export default {
   },
   methods: {
     signUp () {
-      firebase
-        .auth()
-        .createUserWithEmailAndPassword(this.mailaddress, this.password)
-        .then(user => {
-          this.$router.push('/dashboard')
-        })
-        .catch(error => {
-          alert(error.message)
-        })
+      this.$store.commit('setUserName', this.username)
+      this.$store.commit('setMailAddress', this.mailaddress)
+      this.$store.commit('setPassword', this.password)
+      this.$store.dispatch('signUp')
     }
   }
 }

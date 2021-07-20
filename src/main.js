@@ -6,6 +6,7 @@ import router from './router'
 import firebase from 'firebase/app'
 import 'firebase/auth'
 import 'firebase/firestore'
+import store from './store'
 
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
@@ -26,6 +27,7 @@ Vue.config.productionTip = false
 new Vue({
   el: '#app',
   router,
+  store,
   components: { App },
   template: '<App/>'
 })

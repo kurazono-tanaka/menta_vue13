@@ -12,8 +12,8 @@
           <input type="password" id="password" placeholder="Password" v-model="password"/>
         </li>
       </ul>
-      <button @click="signIn">ログイン</button>
-      <p><router-link to="/signup" class="linkStyle">新規登録はこちらから</router-link></p>
+      <button class="btn-style1" @click="signIn">ログイン</button>
+      <p><router-link to="/signup" class="link-style">新規登録はこちらから</router-link></p>
     </main>
     <footer>
       <p>Copyright ©2019 ○○Inc. All rights reserved</p>
@@ -40,6 +40,7 @@ export default {
         .auth()
         .signInWithEmailAndPassword(this.mailaddress, this.password)
         .then(user => {
+          this.$store.commit('setUserName', this.username)
           this.$router.push('/dashboard')
         })
         .catch(error => {
