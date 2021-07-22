@@ -50,11 +50,22 @@ const actions = {
   signIn ({commit}, {mailaddress, password}) {
     firebase.auth().signInWithEmailAndPassword(mailaddress, password).then(user => {
       const userObject = user.user
+      console.log(userObject.displayName)
       commit('setUserName', userObject.displayName)
       commit('setMailAddress', mailaddress)
       commit('setPassword', password)
       router.push('/dashboard')
     }).catch(error => {
+      console.log(`エラー発生：${error}`)
+    })
+  },
+  signOut ({commit}) {
+    firebase.auth().signOut().then(() => {
+      console.log('ログアウト成功！')
+      commit('setUserName', '')
+      commit('setMailAddress', '')
+      commit('setPassword', '')
+    }).catch((error) => {
       console.log(`エラー発生：${error}`)
     })
   }

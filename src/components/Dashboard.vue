@@ -5,7 +5,7 @@
       <p class="header-username">{{$store.getters.getUserName}}さんようこそ！！</p>
       <div class="header-content">
         <p>残高：{{balance}}</p>
-        <button class="btn-style2">ログアウト</button>
+        <button class="btn-style2" @click="signOut">ログアウト</button>
       </div>
     </header>
     <main>
@@ -31,6 +31,10 @@
 </template>
 
 <script>
+import firebase from 'firebase/app'
+import 'firebase/auth'
+import 'firebase/firestore'
+
 export default {
   name: 'dashboard',
   data () {
@@ -41,6 +45,18 @@ export default {
     }
   },
   methods: {
+    signOut () {
+      this.$store.dispatch('signOut')
+    }
+  },
+  mounted () {
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        console.log('login')
+      } else {
+        console.log('logout')
+      }
+    })
   },
   computed: {
     balance () {
