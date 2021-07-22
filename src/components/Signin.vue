@@ -32,9 +32,7 @@ export default {
   },
   methods: {
     signIn () {
-      this.$store.commit('setMailAddress', this.mailaddress)
-      this.$store.commit('setPassword', this.password)
-      this.$store.dispatch('signIn')
+      this.$store.dispatch('signIn', {mailaddress: this.mailaddress, password: this.password})
     }
   }
 }

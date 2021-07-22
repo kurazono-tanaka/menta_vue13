@@ -33,21 +33,26 @@ const getters = {
 }
 
 const actions = {
-  signUp ({commit}) {
-    firebase.auth().createUserWithEmailAndPassword(state.mailaddress, state.password).then(() => {
+  signUp ({commit}, {username, mailaddress, password}) {
+    firebase.auth().createUserWithEmailAndPassword(mailaddress, password).then(() => {
       firebase.auth().currentUser.updateProfile({
-        displayName: state.username
+        displayName: username
       }).then(() => {
+        commit('setUserName', username)
+        commit('setMailAddress', mailaddress)
+        commit('setPassword', password)
         router.push('/dashboard')
       })
     }).catch(error => {
       console.log(`エラー発生：${error}`)
     })
   },
-  signIn ({commit}) {
-    firebase.auth().signInWithEmailAndPassword(state.mailaddress, state.password).then(user => {
+  signIn ({commit}, {mailaddress, password}) {
+    firebase.auth().signInWithEmailAndPassword(mailaddress, password).then(user => {
       const userObject = user.user
       commit('setUserName', userObject.displayName)
+      commit('setMailAddress', mailaddress)
+      commit('setPassword', password)
       router.push('/dashboard')
     }).catch(error => {
       console.log(`エラー発生：${error}`)
