@@ -35,7 +35,7 @@ let router = new Router({
 router.beforeEach((to, from, next) => {
   console.log('toの中身')
   console.log(to)
-  let requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
   console.log('requiresAuthの中身')
   console.log(requiresAuth)
   // let currentUser = firebase.auth().currentUser
