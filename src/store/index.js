@@ -4,7 +4,6 @@ import firebase from 'firebase/app'
 import 'firebase/auth'
 import 'firebase/firestore'
 import router from '@/router'
-// import store from '@/store'
 
 Vue.use(Vuex)
 
@@ -34,17 +33,31 @@ const getters = {
 
 const actions = {
   signUp ({commit}, {username, mailaddress, password}) {
-    firebase.auth().createUserWithEmailAndPassword(mailaddress, password).then(() => {
-      firebase.auth().currentUser.updateProfile({
-        displayName: username
-      }).then(() => {
-        commit('setUserName', username)
-        commit('setMailAddress', mailaddress)
-        commit('setPassword', password)
-        router.push('/dashboard')
+    firebase.auth().createUserWithEmailAndPassword(mailaddress, password).then((response) => {
+      const user = response.user
+      firebase.firestore().collection('users').add({
+        name: username,
+        email: user.email,
+        wallet: 2000
+      }).then((doc) => {
+        console.log(`DB追加に成功しました`)
+        firebase.auth().currentUser.updateProfile({
+          displayName: username
+        }).then(() => {
+          console.log(`ユーザ名登録に成功しました`)
+          console.log(username)
+          commit('setUserName', username)
+          commit('setMailAddress', mailaddress)
+          commit('setPassword', password)
+          router.push('/dashboard')
+        }).catch(error => {
+          console.log(`currentUser.updateProfileでエラー発生：${error}`)
+        })
+      }).catch(error => {
+        console.log(`collectionでエラー発生：${error}`)
       })
     }).catch(error => {
-      console.log(`エラー発生：${error}`)
+      console.log(`createUserWithEmailAndPasswordでエラー発生：${error}`)
     })
   },
   signIn ({commit}, {mailaddress, password}) {
