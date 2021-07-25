@@ -13,6 +13,8 @@ export default {
 
 <style>
 body {
+  width: 700px;
+  margin: 0 auto;
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -91,4 +93,99 @@ header {
 table {
   width: 200px;
 }
+
+#overlay {
+  z-index: 1;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom:0;
+  background-color:rgba(0,0,0,0.5);
+  transition: all .9s ease;
+}
+
+#modal {
+  border: 1px solid block;
+  width: 140px;
+  height: 120px;
+  text-align: center;
+  background-color: white;
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  bottom: 3px;
+  border-radius: 4px;
+  padding-top:10px;
+  transition: all .9s ease;
+}
+
+.modal-sentences {
+  margin-bottom: 10px;
+}
+
+.modal-footer {
+  height: 40%;
+  width: 100%;
+  background-color: #CCCCCC;
+  position: absolute;
+  bottom: 0;
+  border-radius: 0 0 4px 4px;
+}
+
+.btn-style-close {
+  display: block;
+  width: 55px;
+  height: 30px;
+  background-color: red;
+  color: white;
+  margin-top: 15px;
+  margin-left: 70px;
+  border: none;
+  cursor: pointer;
+}
+
+.v-enter,
+.v-leave-to {
+  opacity: 0;
+}
+
+.v-enter #modal {
+  opacity: 0;
+  transform: translateY(-50px);
+}
+
+.v-leave-to #modal {
+  opacity: 0;
+  transform: translateY(-50px);
+}
+
+table {
+  width: 100%;
+}
+
+.table-name {
+  padding-left: 100px;
+  padding-right: 200px;
+  width: 100px;
+}
+
+.table-wallet {
+  width: 100px;
+}
+
+.table-send {
+  width: 50px;
+  margin-right: 100px;
+}
+
+.table-button {
+  background-color: #00CCCC;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
 </style>
