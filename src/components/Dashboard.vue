@@ -25,7 +25,7 @@
               <button @click="openModal(user[0])" class="table-wallet table-button">walletを見る</button>
             </td>
             <td>
-              <button class="table-send table-button">送る</button>
+              <button class="table-send table-button" @click="openSendModal(user[0])">送る</button>
             </td>
           </tr>
         </tbody>
@@ -35,14 +35,26 @@
       <p>Copyright ©2019 ○○Inc. All rights reserved</p>
     </footer>
     <transition>
-      <div id="overlay" @click="closeModal" v-show="showModal">
-        <section id="modal" @click="stopEvent">
-          <p class="modal-sentences">{{modalName}}さんの残高</p>
-          <p>{{modalWallet}}</p>
-          <div class="modal-footer">
-            <button class="btn-style-close" @click="closeModal">close</button>
-          </div>
-        </section>
+      <div>
+        <div id="overlay" @click="closeModal" v-show="showModal">
+          <section id="modal" @click="stopEvent">
+            <p class="modal-sentences">{{modalName}}さんの残高</p>
+            <p>{{modalWallet}}</p>
+            <div class="modal-footer">
+              <button class="btn-style-close" @click="closeModal">close</button>
+            </div>
+          </section>
+        </div>
+        <div id="overlay-sendmodal" @click="closeSendModal" v-show="showSendModal">
+          <section id="sendmodal" @click="stopEvent">
+            <p class="modal-sentences">あなたの残高：{{wallet}}</p>
+            <p>送る金額</p>
+            <input type="text" class="modal-input" v-model.number="sendingMoney">
+            <div class="modal-footer">
+              <button class="btn-style-send" @click="updateWallet">送信</button>
+            </div>
+          </section>
+        </div>
       </div>
     </transition>
   </div>
@@ -58,10 +70,14 @@ export default {
     return {
       username: '',
       wallet: 0,
+      userId: '',
       modalName: '',
       modalWallet: 0,
       userList: [],
-      showModal: false
+      showModal: false,
+      showSendModal: false,
+      sendingMoney: 0,
+      destinationId: ''
     }
   },
   methods: {
@@ -82,6 +98,53 @@ export default {
     },
     stopEvent () {
       event.stopPropagation()
+    },
+    openSendModal (id) {
+      // モーダルウィンドウ表示
+      this.showSendModal = true
+      this.destinationId = id
+    },
+    closeSendModal () {
+      this.showSendModal = false
+    },
+    updateWallet () {
+      // 送信先ユーザの残高取得
+      const createUserArray = this.userList.filter(doc => doc[0] === this.destinationId)
+      const createUser = createUserArray[0]
+      const destinationWallet = createUser[3] + this.sendingMoney
+      const currentWallet = this.wallet - this.sendingMoney
+      // DBの金額更新
+      firebase.firestore().collection('users').doc(this.destinationId).update({
+        wallet: destinationWallet
+      }).then(() => {
+        console.log('送信先の残高更新に成功しました')
+        firebase.firestore().collection('users').doc(this.userId).update({
+          wallet: currentWallet
+        }).then(() => {
+          console.log('ログインユーザの残高更新に成功しました')
+          // DBの金額更新後、userListを更新
+          firebase.firestore().collection('users').get().then((query) => {
+            console.log('ユーザリストの参照に成功しました')
+            const buff = []
+            query.forEach((doc) => {
+              const data = doc.data()
+              buff.push([doc.id, data.name, data.email, data.wallet])
+            })
+            this.userList = buff
+            const createUserArray = buff.filter(doc => doc[1] === this.username)
+            const createUser = createUserArray[0]
+            this.wallet = createUser[3]
+            // モーダルウィンドウ非表示
+            this.showSendModal = false
+          }).catch(error => {
+            console.log(`ユーザリストの参照に失敗しました：${error}`)
+          })
+        }).catch((error) => {
+          console.log(`ログインユーザの残高更新に失敗しました (${error})`)
+        })
+      }).catch((error) => {
+        console.log(`送信先の残高更新に失敗しました (${error})`)
+      })
     }
   },
   mounted () {
@@ -99,32 +162,14 @@ export default {
         const data = doc.data()
         buff.push([doc.id, data.name, data.email, data.wallet])
       })
-      console.log('buffの中身')
-      console.log(buff)
       this.userList = buff
       const createUserArray = buff.filter(doc => doc[1] === this.username)
       const createUser = createUserArray[0]
+      this.userId = createUser[0]
       this.wallet = createUser[3]
-      console.log('this.usernameの中身')
-      console.log(this.username)
-      console.log('createUserArrayの中身')
-      console.log(createUserArray)
-      console.log('createUserArray[0]の中身')
-      console.log(createUserArray[0])
-      console.log('createUserの中身')
-      console.log(createUser)
-      console.log('createUser[3]の中身')
-      console.log(createUser[3])
-      console.log('this.walletの中身')
-      console.log(this.wallet)
     }).catch(error => {
       console.log(`エラー発生：${error}`)
     })
-  },
-  computed: {
-    // wallet () {
-    //   return 1000 - this.money
-    // }
   }
 }
 </script>

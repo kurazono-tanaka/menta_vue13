@@ -105,6 +105,17 @@ table {
   transition: all .9s ease;
 }
 
+#overlay-sendmodal {
+  z-index: 1;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom:0;
+  background-color:rgba(0,0,0,0.5);
+  transition: all .9s ease;
+}
+
 #modal {
   border: 1px solid block;
   width: 140px;
@@ -121,12 +132,32 @@ table {
   transition: all .9s ease;
 }
 
+#sendmodal {
+  border: 1px solid block;
+  width: 200px;
+  height: 160px;
+  text-align: center;
+  background-color: white;
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  bottom: 3px;
+  border-radius: 4px;
+  padding-top:10px;
+  transition: all .9s ease;
+}
+
 .modal-sentences {
   margin-bottom: 10px;
 }
 
+.modal-input {
+  margin-top: 10px;
+}
+
 .modal-footer {
-  height: 40%;
+  height: 50px;
   width: 100%;
   background-color: #CCCCCC;
   position: absolute;
@@ -141,7 +172,19 @@ table {
   background-color: red;
   color: white;
   margin-top: 15px;
-  margin-left: 70px;
+  margin-left: 80px;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-style-send {
+  display: block;
+  width: 55px;
+  height: 30px;
+  background-color: red;
+  color: white;
+  margin-top: 15px;
+  margin-left: 140px;
   border: none;
   cursor: pointer;
 }
@@ -151,12 +194,14 @@ table {
   opacity: 0;
 }
 
-.v-enter #modal {
+.v-enter #modal,
+.v-enter #modal-sentences {
   opacity: 0;
   transform: translateY(-50px);
 }
 
-.v-leave-to #modal {
+.v-leave-to #modal,
+.v-leave-to #modal-sentences {
   opacity: 0;
   transform: translateY(-50px);
 }
