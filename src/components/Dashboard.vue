@@ -114,36 +114,38 @@ export default {
       const destinationWallet = createUser[3] + this.sendingMoney
       const currentWallet = this.wallet - this.sendingMoney
       // DBの金額更新
-      firebase.firestore().collection('users').doc(this.destinationId).update({
-        wallet: destinationWallet
-      }).then(() => {
-        console.log('送信先の残高更新に成功しました')
-        firebase.firestore().collection('users').doc(this.userId).update({
-          wallet: currentWallet
-        }).then(() => {
-          console.log('ログインユーザの残高更新に成功しました')
-          // DBの金額更新後、userListを更新
-          firebase.firestore().collection('users').get().then((query) => {
-            console.log('ユーザリストの参照に成功しました')
-            const buff = []
-            query.forEach((doc) => {
-              const data = doc.data()
-              buff.push([doc.id, data.name, data.email, data.wallet])
-            })
-            this.userList = buff
-            const createUserArray = buff.filter(doc => doc[1] === this.username)
-            const createUser = createUserArray[0]
-            this.wallet = createUser[3]
-            // モーダルウィンドウ非表示
-            this.showSendModal = false
-          }).catch(error => {
-            console.log(`ユーザリストの参照に失敗しました：${error}`)
+      const destinationDoc = firebase.firestore().collection('users').doc(this.destinationId)
+      const currentWalletDoc = firebase.firestore().collection('users').doc(this.userId)
+      return firebase.firestore().runTransaction((transaction) => {
+        // 送金される側の更新
+        return transaction.update(destinationDoc, { wallet: destinationWallet }).then(() => {
+          console.log('送信先の残高更新に成功しました')
+          // 送金する側の更新
+          return transaction.update(currentWalletDoc, { wallet: currentWallet }).then(() => {
+            console.log('ログインユーザの残高更新に成功しました')
           })
-        }).catch((error) => {
-          console.log(`ログインユーザの残高更新に失敗しました (${error})`)
+        })
+      }).then(() => {
+        console.log('Transaction successfully committed!')
+        // DBの金額更新後、userListを更新
+        firebase.firestore().collection('users').get().then((query) => {
+          console.log('ユーザリストの参照に成功しました')
+          const buff = []
+          query.forEach((doc) => {
+            const data = doc.data()
+            buff.push([doc.id, data.name, data.email, data.wallet])
+          })
+          this.userList = buff
+          const createUserArray = buff.filter(doc => doc[1] === this.username)
+          const createUser = createUserArray[0]
+          this.wallet = createUser[3]
+          // モーダルウィンドウ非表示
+          this.showSendModal = false
+        }).catch(error => {
+          console.log(`ユーザリストの参照に失敗しました：${error}`)
         })
       }).catch((error) => {
-        console.log(`送信先の残高更新に失敗しました (${error})`)
+        console.log(`Transaction failed: ${error}`)
       })
     }
   },
