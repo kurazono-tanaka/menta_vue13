@@ -4,6 +4,7 @@ import firebase from 'firebase/app'
 import 'firebase/auth'
 import 'firebase/firestore'
 import router from '@/router'
+import {db} from '../main.js'
 
 Vue.use(Vuex)
 
@@ -35,7 +36,7 @@ const actions = {
   signUp ({commit}, {username, mailaddress, password}) {
     firebase.auth().createUserWithEmailAndPassword(mailaddress, password).then((response) => {
       const user = response.user
-      firebase.firestore().collection('users').add({
+      db.collection('users').add({
         name: username,
         email: user.email,
         wallet: 2000

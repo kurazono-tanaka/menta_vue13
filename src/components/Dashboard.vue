@@ -63,6 +63,7 @@
 <script>
 import firebase from 'firebase/app'
 import 'firebase/auth'
+import {db} from '../main.js'
 
 export default {
   name: 'dashboard',
@@ -114,9 +115,9 @@ export default {
       const destinationWallet = createUser[3] + this.sendingMoney
       const currentWallet = this.wallet - this.sendingMoney
       // DBの金額更新
-      const destinationDoc = firebase.firestore().collection('users').doc(this.destinationId)
-      const currentWalletDoc = firebase.firestore().collection('users').doc(this.userId)
-      return firebase.firestore().runTransaction((transaction) => {
+      const destinationDoc = db.collection('users').doc(this.destinationId)
+      const currentWalletDoc = db.collection('users').doc(this.userId)
+      return db.runTransaction((transaction) => {
         // 送金される側の更新
         return transaction.update(destinationDoc, { wallet: destinationWallet }).then(() => {
           console.log('送信先の残高更新に成功しました')
@@ -128,7 +129,7 @@ export default {
       }).then(() => {
         console.log('Transaction successfully committed!')
         // DBの金額更新後、userListを更新
-        firebase.firestore().collection('users').get().then((query) => {
+        db.collection('users').get().then((query) => {
           console.log('ユーザリストの参照に成功しました')
           const buff = []
           query.forEach((doc) => {
@@ -158,7 +159,7 @@ export default {
         console.log('logout')
       }
     })
-    firebase.firestore().collection('users').get().then((query) => {
+    db.collection('users').get().then((query) => {
       const buff = []
       query.forEach((doc) => {
         const data = doc.data()

@@ -19,7 +19,9 @@ const firebaseConfig = {
   measurementId: 'G-EVH5434R44'
 }
 
-firebase.initializeApp(firebaseConfig)
+const firebaseApp = firebase.initializeApp(firebaseConfig)
+
+export const db = firebaseApp.firestore()
 
 Vue.config.productionTip = false
 
