@@ -117,7 +117,7 @@ export default {
       // DBの金額更新
       const destinationDoc = db.collection('users').doc(this.destinationId)
       const currentWalletDoc = db.collection('users').doc(this.userId)
-      return db.runTransaction((transaction) => {
+      return db.runTransaction(async (transaction) => {
         // 送金される側の更新
         transaction.update(destinationDoc, { wallet: destinationWallet })
         console.log('送信先の残高更新に成功しました')
