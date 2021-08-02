@@ -119,13 +119,11 @@ export default {
       const currentWalletDoc = db.collection('users').doc(this.userId)
       return db.runTransaction((transaction) => {
         // 送金される側の更新
-        return transaction.update(destinationDoc, { wallet: destinationWallet }).then(() => {
-          console.log('送信先の残高更新に成功しました')
-          // 送金する側の更新
-          return transaction.update(currentWalletDoc, { wallet: currentWallet }).then(() => {
-            console.log('ログインユーザの残高更新に成功しました')
-          })
-        })
+        transaction.update(destinationDoc, { wallet: destinationWallet })
+        console.log('送信先の残高更新に成功しました')
+        // 送金する側の更新
+        transaction.update(currentWalletDoc, { wallet: currentWallet })
+        console.log('ログインユーザの残高更新に成功しました')
       }).then(() => {
         console.log('Transaction successfully committed!')
         // DBの金額更新後、userListを更新
