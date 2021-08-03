@@ -61,10 +61,6 @@
 </template>
 
 <script>
-import firebase from 'firebase/app'
-import 'firebase/auth'
-import {db} from '../main.js'
-
 export default {
   name: 'dashboard',
   data () {
@@ -114,63 +110,22 @@ export default {
       const createUser = createUserArray[0]
       const destinationWallet = createUser[3] + this.sendingMoney
       const currentWallet = this.wallet - this.sendingMoney
-      // DBの金額更新
-      const destinationDoc = db.collection('users').doc(this.destinationId)
-      const currentWalletDoc = db.collection('users').doc(this.userId)
-      return db.runTransaction(async (transaction) => {
-        // 送金される側の更新
-        transaction.update(destinationDoc, { wallet: destinationWallet })
-        console.log('送信先の残高更新に成功しました')
-        // 送金する側の更新
-        transaction.update(currentWalletDoc, { wallet: currentWallet })
-        console.log('ログインユーザの残高更新に成功しました')
-      }).then(() => {
-        console.log('Transaction successfully committed!')
-        // DBの金額更新後、userListを更新
-        db.collection('users').get().then((query) => {
-          console.log('ユーザリストの参照に成功しました')
-          const buff = []
-          query.forEach((doc) => {
-            const data = doc.data()
-            buff.push([doc.id, data.name, data.email, data.wallet])
-          })
-          this.userList = buff
-          const createUserArray = buff.filter(doc => doc[1] === this.username)
-          const createUser = createUserArray[0]
-          this.wallet = createUser[3]
-          // モーダルウィンドウ非表示
-          this.showSendModal = false
-        }).catch(error => {
-          console.log(`ユーザリストの参照に失敗しました：${error}`)
-        })
-      }).catch((error) => {
-        console.log(`Transaction failed: ${error}`)
-      })
+      this.$store.dispatch('updateWallet', {destinationId: this.destinationId, destinationWallet: destinationWallet, currentId: this.userId, currentWallet: currentWallet})
+      this.userList = this.$store.getters.getUserList
+      this.wallet = this.$store.getters.getWallet
+      this.showSendModal = this.$store.getters.getShowSendModal
     }
   },
   mounted () {
     this.username = this.$store.getters.getUserName
-    firebase.auth().onAuthStateChanged(user => {
-      if (user) {
-        console.log('login')
-      } else {
-        console.log('logout')
-      }
-    })
-    db.collection('users').get().then((query) => {
-      const buff = []
-      query.forEach((doc) => {
-        const data = doc.data()
-        buff.push([doc.id, data.name, data.email, data.wallet])
-      })
-      this.userList = buff
-      const createUserArray = buff.filter(doc => doc[1] === this.username)
-      const createUser = createUserArray[0]
-      this.userId = createUser[0]
-      this.wallet = createUser[3]
-    }).catch(error => {
-      console.log(`エラー発生：${error}`)
-    })
+    this.$store.dispatch('signCheck')
+    this.$store.dispatch('getUserLists')
+    this.userList = this.$store.getters.getUserList
+    this.wallet = this.$store.getters.getWallet
+    console.log('this.userList')
+    console.log(this.userList)
+    console.log('this.wallet')
+    console.log(this.wallet)
   }
 }
 </script>
