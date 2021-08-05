@@ -61,8 +61,6 @@
 </template>
 
 <script>
-import store from '../store'
-
 export default {
   name: 'dashboard',
   data () {
@@ -106,46 +104,32 @@ export default {
     closeSendModal () {
       this.showSendModal = false
     },
-    updateWallet () {
+    async updateWallet () {
       // 送信先ユーザの残高取得
       const createUserArray = this.userList.filter(doc => doc[0] === this.destinationId)
       const createUser = createUserArray[0]
       const destinationWallet = createUser[3] + this.sendingMoney
       const currentWallet = this.wallet - this.sendingMoney
-      async function updateWalletCall () {
-        await store.dispatch('updateWallet', {destinationId: this.destinationId, destinationWallet: destinationWallet, currentId: this.userId, currentWallet: currentWallet})
-        this.userList = this.$store.getters.getUserList
-        this.wallet = this.$store.getters.getWallet
-        this.showSendModal = this.$store.getters.getShowSendModal
-        console.log('どっちが先か1')
-      }
-      updateWalletCall()
-      console.log('どっちが先か2')
+      await this.$store.dispatch('updateWallet', {destinationId: this.destinationId, destinationWallet: destinationWallet, currentId: this.userId, currentWallet: currentWallet})
+      this.userList = this.$store.getters.getUserList
+      this.wallet = this.$store.getters.getWallet
+      this.showSendModal = this.$store.getters.getShowSendModal
+      console.log('updateWallet完了')
     }
   },
-  mounted () {
+  async mounted () {
     this.username = this.$store.getters.getUserName
-    let asyncUserList
-    let asyncWallet
-    async function asyncCall () {
-      await store.dispatch('signCheck')
-      // await this.$store.dispatch('signCheck')
-      console.log('signCheckが完了した')
-      await store.dispatch('getUserLists')
-      // await this.$store.dispatch('getUserLists')
-      console.log('getUserListsが完了した')
-      asyncUserList = store.getters.getUserList
-      asyncWallet = store.getters.getWallet
-      console.log('asyncUserList')
-      console.log(asyncUserList)
-      console.log('asyncWallet')
-      console.log(asyncWallet)
-      console.log('どっちが先か1')
-    }
-    asyncCall()
-    this.userList = asyncUserList
-    this.wallet = asyncWallet
-    console.log('どっちが先か2')
+    await this.$store.dispatch('signCheck')
+    console.log('signCheckが完了した')
+    await this.$store.dispatch('getUserLists')
+    console.log('getUserListsが完了した')
+    this.userList = this.$store.getters.getUserList
+    this.wallet = this.$store.getters.getWallet
+    console.log('this.userList')
+    console.log(this.userList)
+    console.log(' this.wallet ')
+    console.log(this.wallet)
+    console.log('mounted完了')
   }
 }
 </script>
