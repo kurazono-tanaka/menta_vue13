@@ -104,7 +104,7 @@ const actions = {
       console.log(`エラー発生：${error}`)
     })
   },
-  updateWallet ({commit}, {destinationId, destinationWallet, currentId, currentWallet}) {
+  async updateWallet ({commit}, {destinationId, destinationWallet, currentId, currentWallet}) {
     // DBの金額更新
     const destinationDoc = db.collection('users').doc(destinationId)
     const currentWalletDoc = db.collection('users').doc(currentId)
@@ -147,7 +147,7 @@ const actions = {
       }
     })
   },
-  getUserLists ({commit}) {
+  async getUserLists ({commit}) {
     db.collection('users').get().then((query) => {
       console.log('ユーザリストの参照に成功しました')
       const buff = []
