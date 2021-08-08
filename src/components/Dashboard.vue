@@ -110,6 +110,10 @@ export default {
       const createUser = createUserArray[0]
       const destinationWallet = createUser[3] + this.sendingMoney
       const currentWallet = this.wallet - this.sendingMoney
+      console.log(this.destinationId)
+      console.log('this.destinationId')
+      console.log(this.userId)
+      console.log('this.userId')
       await this.$store.dispatch('updateWallet', {destinationId: this.destinationId, destinationWallet: destinationWallet, currentId: this.userId, currentWallet: currentWallet})
       this.userList = this.$store.getters.getUserList
       this.wallet = this.$store.getters.getWallet
@@ -124,9 +128,12 @@ export default {
     await this.$store.dispatch('getUserLists')
     console.log('getUserListsが完了した')
     this.userList = this.$store.getters.getUserList
+    this.userId = this.$store.getters.getUserId
     this.wallet = this.$store.getters.getWallet
     console.log('this.userList')
     console.log(this.userList)
+    console.log('this.userId ')
+    console.log(this.userId)
     console.log(' this.wallet ')
     console.log(this.wallet)
     console.log('mounted完了')

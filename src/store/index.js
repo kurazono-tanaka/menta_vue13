@@ -14,6 +14,7 @@ const state = {
   password: '',
   userList: [],
   wallet: 0,
+  userId: '',
   showSendModal: true
 }
 
@@ -33,6 +34,9 @@ const mutations = {
   setWallet (state, wallet) {
     state.wallet = wallet
   },
+  setUserId (state, userId) {
+    state.userId = userId
+  },
   setShowSendModal (state, showSendModal) {
     state.showSendModal = showSendModal
   }
@@ -47,6 +51,9 @@ const getters = {
   },
   getWallet: (state) => {
     return state.wallet
+  },
+  getUserId: (state) => {
+    return state.userId
   },
   getShowSendModal: (state) => {
     return state.showSendModal
@@ -106,6 +113,7 @@ const actions = {
   },
   async updateWallet ({commit}, {destinationId, destinationWallet, currentId, currentWallet}) {
     // DBの金額更新
+    console.log('これからupdateWallet実施')
     const destinationDoc = db.collection('users').doc(destinationId)
     const currentWalletDoc = db.collection('users').doc(currentId)
     return db.runTransaction(async (transaction) => {
@@ -148,7 +156,7 @@ const actions = {
     })
   },
   async getUserLists ({commit}) {
-    db.collection('users').get().then((query) => {
+    await db.collection('users').get().then((query) => {
       console.log('ユーザリストの参照に成功しました')
       const buff = []
       query.forEach((doc) => {
@@ -162,6 +170,9 @@ const actions = {
       console.log(state.userList)
       const createUserArray = buff.filter(doc => doc[1] === state.username)
       const createUser = createUserArray[0]
+      commit('setUserId', createUser[0])
+      console.log('state.userId')
+      console.log(state.userId)
       commit('setWallet', createUser[3])
       console.log('state.wallet')
       console.log(state.wallet)
