@@ -126,7 +126,7 @@ const actions = {
     }).then(() => {
       console.log('Transaction successfully committed!')
       // DBの金額更新後、userListを更新
-      db.collection('users').get().then((query) => {
+      await db.collection('users').get().then((query) => {
         console.log('ユーザリストの参照に成功しました')
         const buff = []
         query.forEach((doc) => {
