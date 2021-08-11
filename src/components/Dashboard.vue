@@ -25,7 +25,7 @@
               <button @click="openModal(user[0])" class="table-wallet table-button">walletを見る</button>
             </td>
             <td>
-              <button class="table-send table-button">送る</button>
+              <button class="table-send table-button" @click="openSendModal(user[0])">送る</button>
             </td>
           </tr>
         </tbody>
@@ -35,33 +35,46 @@
       <p>Copyright ©2019 ○○Inc. All rights reserved</p>
     </footer>
     <transition>
-      <div id="overlay" @click="closeModal" v-show="showModal">
-        <section id="modal" @click="stopEvent">
-          <p class="modal-sentences">{{modalName}}さんの残高</p>
-          <p>{{modalWallet}}</p>
-          <div class="modal-footer">
-            <button class="btn-style-close" @click="closeModal">close</button>
-          </div>
-        </section>
+      <div>
+        <div id="overlay" @click="closeModal" v-show="showModal">
+          <section id="modal" @click="stopEvent">
+            <p class="modal-sentences">{{modalName}}さんの残高</p>
+            <p>{{modalWallet}}</p>
+            <div class="modal-footer">
+              <button class="btn-style-close" @click="closeModal">close</button>
+            </div>
+          </section>
+        </div>
+        <div id="overlay-sendmodal" @click="closeSendModal" v-show="showSendModal">
+          <section id="sendmodal" @click="stopEvent">
+            <p class="modal-sentences">あなたの残高：{{wallet}}</p>
+            <p>送る金額</p>
+            <input type="text" class="modal-input" v-model.number="sendingMoney">
+            <div class="modal-footer">
+              <button class="btn-style-send" @click="updateWallet">送信</button>
+            </div>
+          </section>
+        </div>
       </div>
     </transition>
   </div>
 </template>
 
 <script>
-import firebase from 'firebase/app'
-import 'firebase/auth'
-
 export default {
   name: 'dashboard',
   data () {
     return {
       username: '',
       wallet: 0,
+      userId: '',
       modalName: '',
       modalWallet: 0,
       userList: [],
-      showModal: false
+      showModal: false,
+      showSendModal: false,
+      sendingMoney: 0,
+      destinationId: ''
     }
   },
   methods: {
@@ -82,49 +95,48 @@ export default {
     },
     stopEvent () {
       event.stopPropagation()
+    },
+    openSendModal (id) {
+      // モーダルウィンドウ表示
+      this.showSendModal = true
+      this.destinationId = id
+    },
+    closeSendModal () {
+      this.showSendModal = false
+    },
+    async updateWallet () {
+      // 送信先ユーザの残高取得
+      const createUserArray = this.userList.filter(doc => doc[0] === this.destinationId)
+      const createUser = createUserArray[0]
+      const destinationWallet = createUser[3] + this.sendingMoney
+      const currentWallet = this.wallet - this.sendingMoney
+      console.log(this.destinationId)
+      console.log('this.destinationId')
+      console.log(this.userId)
+      console.log('this.userId')
+      await this.$store.dispatch('updateWallet', {destinationId: this.destinationId, destinationWallet: destinationWallet, currentId: this.userId, currentWallet: currentWallet})
+      this.userList = this.$store.getters.getUserList
+      this.wallet = this.$store.getters.getWallet
+      this.showSendModal = this.$store.getters.getShowSendModal
+      console.log('updateWallet完了')
     }
   },
-  mounted () {
+  async mounted () {
     this.username = this.$store.getters.getUserName
-    firebase.auth().onAuthStateChanged(user => {
-      if (user) {
-        console.log('login')
-      } else {
-        console.log('logout')
-      }
-    })
-    firebase.firestore().collection('users').get().then((query) => {
-      const buff = []
-      query.forEach((doc) => {
-        const data = doc.data()
-        buff.push([doc.id, data.name, data.email, data.wallet])
-      })
-      console.log('buffの中身')
-      console.log(buff)
-      this.userList = buff
-      const createUserArray = buff.filter(doc => doc[1] === this.username)
-      const createUser = createUserArray[0]
-      this.wallet = createUser[3]
-      console.log('this.usernameの中身')
-      console.log(this.username)
-      console.log('createUserArrayの中身')
-      console.log(createUserArray)
-      console.log('createUserArray[0]の中身')
-      console.log(createUserArray[0])
-      console.log('createUserの中身')
-      console.log(createUser)
-      console.log('createUser[3]の中身')
-      console.log(createUser[3])
-      console.log('this.walletの中身')
-      console.log(this.wallet)
-    }).catch(error => {
-      console.log(`エラー発生：${error}`)
-    })
-  },
-  computed: {
-    // wallet () {
-    //   return 1000 - this.money
-    // }
+    await this.$store.dispatch('signCheck')
+    console.log('signCheckが完了した')
+    await this.$store.dispatch('getUserLists')
+    console.log('getUserListsが完了した')
+    this.userList = this.$store.getters.getUserList
+    this.userId = this.$store.getters.getUserId
+    this.wallet = this.$store.getters.getWallet
+    console.log('this.userList')
+    console.log(this.userList)
+    console.log('this.userId ')
+    console.log(this.userId)
+    console.log(' this.wallet ')
+    console.log(this.wallet)
+    console.log('mounted完了')
   }
 }
 </script>
