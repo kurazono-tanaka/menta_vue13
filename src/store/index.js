@@ -123,7 +123,7 @@ const actions = {
       // 送金する側の更新
       transaction.update(currentWalletDoc, { wallet: currentWallet })
       console.log('ログインユーザの残高更新に成功しました')
-    }).then(() => {
+    }).then(async () => {
       console.log('Transaction successfully committed!')
       // DBの金額更新後、userListを更新
       await db.collection('users').get().then((query) => {
